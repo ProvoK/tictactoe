@@ -24,22 +24,22 @@ function calculateWinner(squares) {
   return null
 }
 
-const Square = R.curry((props, i) => (
-	<button className="square" onClick={() => props.onClick(i)}>
-		{props.squares[i]}
+const Square = R.curry(({onClick, squares}, i) => (
+	<button className="square" onClick={() => onClick(i)}>
+		{squares[i]}
 	</button>
 ))
 
-const BoardRow = (props) => {
-	const squares = R.map(Square(props), props.indexes)
-	return <div className="board-row"> {squares} </div>
+const BoardRow = ({onClick, squares, indexes}) => {
+	const squareComponents = R.map(Square({onClick, squares}), indexes)
+	return <div className="board-row"> {squareComponents } </div>
 }
 
-const Board = (props) => (
+const Board = ({onClick, squares}) => (
 	<div>
-		<BoardRow squares={props.squares} onClick={props.onClick} indexes={R.range(0, 3)} />
-		<BoardRow squares={props.squares} onClick={props.onClick} indexes={R.range(3, 6)} />
-		<BoardRow squares={props.squares} onClick={props.onClick} indexes={R.range(6, 9)} />
+		<BoardRow squares={squares} onClick={onClick} indexes={R.range(0, 3)} />
+		<BoardRow squares={squares} onClick={onClick} indexes={R.range(3, 6)} />
+		<BoardRow squares={squares} onClick={onClick} indexes={R.range(6, 9)} />
 	</div>
 )
 
