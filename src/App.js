@@ -3,6 +3,10 @@ import logo from './logo.svg'
 import './App.css'
 import * as R from 'ramda'
 
+import { connect } from 'react-redux'
+
+import { addMove, jumpTo } from './actions'
+
 
 function calculateWinner(squares) {
   const lines = [
@@ -43,47 +47,42 @@ const Board = ({onClick, squares}) => (
 	</div>
 )
 
+const mapStateToProps = state => {
+	return {
+		history: state.history,
+		squares: state.history[state.stepNumber],
+		player: state.nextSign
+	}
+}
+
+const mapDispatchToProps = dispatch => {
+	return {
+		addMove: (pos, player) => dispatch(addMove(pos, player)),
+		jumpTo: (index) => dispatch(jumpTo(index))
+	}
+}
 
 class Game extends React.Component {
 	constructor(props) {
 		super(props)
-		this.state = {
-			history: [{squares: Array(9).fill(null)}],
-			stepNumber: 0,
-			xIsNext: true
-		}
 	}
 
 	handleClick(i) {
-		const history = this.state.history.slice(0, this.state.stepNumber + 1)
-		const current = history[history.length - 1]
-		const squares = current.squares.slice()
-		if (calculateWinner(squares) || squares[i]) {
+		if (calculateWinner(this.props.squares) || this.props.squares[i]) {
 			return
 		}
-		squares[i] = this.state.xIsNext ? 'X' : 'O'
-		this.setState({
-			history: history.concat([{
-				squares: squares,
-			}]),
-			stepNumber: history.length,
-			xIsNext: !this.state.xIsNext,
-		})
+
+		this.props.addMove(i, this.props.player)
 	}
 
 	jumpTo(step) {
-		this.setState({
-			stepNumber: step,
-			xIsNext: (step % 2) === 0,
-		})
+		this.props.jumpTo(step)
 	}
 
 	render() {
-		const history = this.state.history
-		const current = history[this.state.stepNumber]
-		const winner = calculateWinner(current.squares)
+		const winner = calculateWinner(this.props.squares)
 
-		const moves = history.map((step, move) => {
+		const moves = this.props.history.map((step, move) => {
 			const desc = move ? `Go to move # ${move}` : 'Go to start'
 			return (
 				<li key={move}>
@@ -96,13 +95,13 @@ class Game extends React.Component {
 		if (winner) {
 			status = 'Winner: ' + winner
 		} else {
-			status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O')
+			status = 'Next player: ' + (this.props.player)
 		}
 		return (
 			<div className="game">
 				<div className="game-board">
 					<Board
-						squares={current.squares}
+						squares={this.props.squares}
 						onClick={(i) => this.handleClick(i)}
 					/>
 				</div>
@@ -115,8 +114,8 @@ class Game extends React.Component {
 	}
 }
 
+const ConnectedGame = connect(mapStateToProps, mapDispatchToProps)(Game)
 
-
-const App = () => <Game />
+const App = () => <ConnectedGame />
 
 export default App
