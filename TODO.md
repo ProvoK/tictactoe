@@ -1,6 +1,7 @@
 ## TODOs
 
-- Implement time travel (`jumpTo` reducer)
 - Refactor for better naming-consistency
+- More functional approach
+- "key" missing for some components
 - Tests?
 

@@ -82,7 +82,7 @@ class Game extends React.Component {
 	render() {
 		const winner = calculateWinner(this.props.squares)
 
-		const moves = this.props.history.map((step, move) => {
+		const moves = R.init(this.props.history).map((step, move) => {
 			const desc = move ? `Go to move # ${move}` : 'Go to start'
 			return (
 				<li key={move}>
