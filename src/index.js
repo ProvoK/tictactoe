@@ -7,8 +7,6 @@ import registerServiceWorker from './registerServiceWorker';
 import { Provider } from 'react-redux'
 
 import store from './store'
-import { addMove, jumpTo } from './actions'
-
 
 ReactDOM.render(
 	<Provider store={store} >
@@ -17,7 +15,3 @@ ReactDOM.render(
 	document.getElementById('root')
 )
 registerServiceWorker()
-
-//window.store = store
-//window.addMove = addMove
-//window.jumpTo = jumpTo
