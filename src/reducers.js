@@ -3,19 +3,19 @@ import * as R from 'ramda'
 import { ADD_MOVE, JUMP_TO } from './actions'
 
 const initialState = {
-	stepNumber: 0,
+	index: 0,
 	history: [Array(9).fill(null)],
-	nextSign: 'X'
+	nextPlayer: 'X'
 }
 
 const addMove = (state, action) => {
 	const transform = {
 		history: R.pipe(
-			R.slice(0, state.stepNumber + 1),
-			R.append(R.update(action.position, action.sign, R.nth(state.stepNumber, state.history)))
+			R.slice(0, state.index + 1),
+			R.append(R.update(action.index, action.sign, R.nth(state.index, state.history)))
 		),
-		stepNumber: R.add(1),
-		nextSign: (x) => R.equals(x, 'X') ? 'O' : 'X'
+		index: R.add(1),
+		nextPlayer: (x) => R.equals(x, 'X') ? 'O' : 'X'
 	}
 	return R.evolve(transform, state)
 
@@ -27,8 +27,8 @@ const jumpTo = (state, action) => {
 		return R.merge(
 			state,
 			{
-				stepNumber: action.index,
-				nextSign: action.index % 2 === 0 ? 'X' : 'O'
+				index: action.index,
+				nextPlayer: action.index % 2 === 0 ? 'X' : 'O'
 			}
 		)
 	} else {

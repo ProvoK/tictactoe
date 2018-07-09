@@ -8,7 +8,7 @@ import { connect } from 'react-redux'
 import { addMove, jumpTo } from './actions'
 
 
-function calculateWinner(squares) {
+function calculateWinner(board) {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -21,43 +21,43 @@ function calculateWinner(squares) {
   ]
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i]
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a]
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+      return board[a]
     }
   }
   return null
 }
 
-const Square = R.curry(({onClick, squares}, i) => (
+const Square = R.curry(({onClick, board}, i) => (
 	<button className="square" onClick={() => onClick(i)}>
-		{squares[i]}
+		{board[i]}
 	</button>
 ))
 
-const BoardRow = ({onClick, squares, indexes}) => {
-	const squareComponents = R.map(Square({onClick, squares}), indexes)
+const BoardRow = ({onClick, board, indexes}) => {
+	const squareComponents = R.map(Square({onClick, board}), indexes)
 	return <div className="board-row"> {squareComponents } </div>
 }
 
-const Board = ({onClick, squares}) => (
+const Board = ({onClick, board}) => (
 	<div>
-		<BoardRow squares={squares} onClick={onClick} indexes={R.range(0, 3)} />
-		<BoardRow squares={squares} onClick={onClick} indexes={R.range(3, 6)} />
-		<BoardRow squares={squares} onClick={onClick} indexes={R.range(6, 9)} />
+		<BoardRow board={board} onClick={onClick} indexes={R.range(0, 3)} />
+		<BoardRow board={board} onClick={onClick} indexes={R.range(3, 6)} />
+		<BoardRow board={board} onClick={onClick} indexes={R.range(6, 9)} />
 	</div>
 )
 
-const mapStateToProps = state => {
+const gameStateToProps = state => {
 	return {
 		history: state.history,
-		squares: state.history[state.stepNumber],
-		player: state.nextSign
+		board: state.history[state.index],
+		player: state.nextPlayer
 	}
 }
 
-const mapDispatchToProps = dispatch => {
+const gameDispatchToProps = dispatch => {
 	return {
-		addMove: (pos, player) => dispatch(addMove(pos, player)),
+		addMove: (index, player) => dispatch(addMove(index, player)),
 		jumpTo: (index) => dispatch(jumpTo(index))
 	}
 }
@@ -68,7 +68,7 @@ class Game extends React.Component {
 	}
 
 	handleClick(i) {
-		if (calculateWinner(this.props.squares) || this.props.squares[i]) {
+		if (calculateWinner(this.props.board) || this.props.board[i]) {
 			return
 		}
 
@@ -80,13 +80,13 @@ class Game extends React.Component {
 	}
 
 	render() {
-		const winner = calculateWinner(this.props.squares)
+		const winner = calculateWinner(this.props.board)
 
-		const moves = R.init(this.props.history).map((step, move) => {
-			const desc = move ? `Go to move # ${move}` : 'Go to start'
+		const moves = R.init(this.props.history).map((_, index) => {
+			const desc = index ? `Go to move # ${index}` : 'Go to start'
 			return (
-				<li key={move}>
-					<button onClick={() => this.jumpTo(move)}>{desc}</button>
+				<li key={index}>
+					<button onClick={() => this.jumpTo(index)}>{desc}</button>
 				</li>
 			)
 		})
@@ -101,7 +101,7 @@ class Game extends React.Component {
 			<div className="game">
 				<div className="game-board">
 					<Board
-						squares={this.props.squares}
+						board={this.props.board}
 						onClick={(i) => this.handleClick(i)}
 					/>
 				</div>
@@ -114,7 +114,7 @@ class Game extends React.Component {
 	}
 }
 
-const ConnectedGame = connect(mapStateToProps, mapDispatchToProps)(Game)
+const ConnectedGame = connect(gameStateToProps, gameDispatchToProps)(Game)
 
 const App = () => <ConnectedGame />
 
