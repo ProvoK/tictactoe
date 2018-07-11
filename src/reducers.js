@@ -27,19 +27,20 @@ const addMove = (state, action) => {
 
 }
 
+const isValidIndex = R.curry((index, list) => R.and(
+  R.gte(index, 0),
+  R.lt(index, R.length(list))
+))
+
 const jumpTo = (state, action) => {
-	const index = action.index
-	if (index >= 0 && index <= state.history.length) {
-		return R.merge(
-			state,
-			{
-				index: action.index,
-				nextPlayer: action.index % 2 === 0 ? 'X' : 'O'
-			}
-		)
-	} else {
-		return state
-	}
+	return R.ifElse(
+		R.pipe(R.prop('history'), isValidIndex(action.index)),
+		R.evolve({
+			index: () => action.index,
+			nextPlayer: () => action.index % 2 === 0 ? 'X' : 'O'
+		}),
+		R.identity
+	)(state)
 }
 
 const rootReducer = (state = initialState, action) => {
