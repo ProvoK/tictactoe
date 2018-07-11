@@ -8,14 +8,20 @@ const initialState = {
 	nextPlayer: 'X'
 }
 
+const duplicateLast = (l) => R.append(R.last(l), l)
+const updateLastAt = R.curry((item, index, l) => (
+  R.update(l.length - 1, R.update(index, item, R.last(l)), l)
+))
+
 const addMove = (state, action) => {
 	const transform = {
 		history: R.pipe(
-			R.slice(0, state.index + 1),
-			R.append(R.update(action.index, action.sign, R.nth(state.index, state.history)))
+			R.take(state.index + 1),
+			duplicateLast,
+			updateLastAt(action.sign, action.index)
 		),
 		index: R.add(1),
-		nextPlayer: (x) => R.equals(x, 'X') ? 'O' : 'X'
+		nextPlayer: (x) => x === 'X' ? 'O' : 'X'
 	}
 	return R.evolve(transform, state)
 
