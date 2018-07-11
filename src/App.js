@@ -1,5 +1,4 @@
-import React, { Component } from 'react'
-import logo from './logo.svg'
+import React from 'react'
 import './App.css'
 import * as R from 'ramda'
 
@@ -63,10 +62,6 @@ const gameDispatchToProps = dispatch => {
 }
 
 class Game extends React.Component {
-	constructor(props) {
-		super(props)
-	}
-
 	handleClick(i) {
 		if (calculateWinner(this.props.board) || this.props.board[i]) {
 			return
