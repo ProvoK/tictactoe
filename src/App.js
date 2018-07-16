@@ -4,7 +4,7 @@ import * as R from 'ramda'
 
 import { connect } from 'react-redux'
 
-import { addMove, jumpTo } from './actions'
+import { addMove, jumpTo, previousMove, restartGame } from './actions'
 
 
 function calculateWinner(board) {
@@ -57,9 +57,18 @@ const gameStateToProps = state => {
 const gameDispatchToProps = dispatch => {
 	return {
 		addMove: (index, player) => dispatch(addMove(index, player)),
-		jumpTo: (index) => dispatch(jumpTo(index))
+		jumpTo: (index) => dispatch(jumpTo(index)),
+		restartGame: () => dispatch(restartGame()),
+		previousMove: () => dispatch(previousMove())
 	}
 }
+
+const LeftControlPanel = ({previousMove, restartGame}) => (
+	<div class="tile is-vertical is-child">
+		<div className="button" onClick={previousMove}>Back One</div>
+		<div className="button" onClick={restartGame}>Restart game</div>
+	</div>
+)
 
 class Game extends React.Component {
 	handleClick(i) {
@@ -80,29 +89,41 @@ class Game extends React.Component {
 		const moves = R.init(this.props.history).map((_, index) => {
 			const desc = index ? `Go to move # ${index}` : 'Go to start'
 			return (
-				<li key={index}>
-					<button onClick={() => this.jumpTo(index)}>{desc}</button>
-				</li>
+				<button
+					key={index}
+					className="button"
+					onClick={() => this.jumpTo(index)}
+				>{desc}</button>
 			)
 		})
 
 		let status
 		if (winner) {
-			status = 'Winner: ' + winner
+			status = `${this.props.player} wins!!!!`
 		} else {
-			status = 'Next player: ' + (this.props.player)
+			status = `${this.props.player} turn`
 		}
 		return (
-			<div className="game">
-				<div className="game-board">
-					<Board
-						board={this.props.board}
-						onClick={(i) => this.handleClick(i)}
-					/>
-				</div>
-				<div className="game-info">
-					<div>{status}</div>
-					<ol>{moves}</ol>
+			<div className="tile is-ancestor">
+				<div className="tile is-parent">
+					<div className="tile is-parent is-2">
+						<LeftControlPanel
+							previousMove={this.props.previousMove}
+							restartGame={this.props.restartGame}
+						/>
+					</div>
+					<div className="tile is-4 is-parent is-vertical">
+						<div className="tile title">{status}</div>
+						<div className="tile game-board">
+							<Board
+								board={this.props.board}
+								onClick={(i) => this.handleClick(i)}
+							/>
+						</div>
+					</div>
+					<div className="tile is-parent is-2">
+						<ol>{moves}</ol>
+					</div>
 				</div>
 			</div>
 		)
