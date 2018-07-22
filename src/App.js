@@ -4,7 +4,13 @@ import * as R from 'ramda'
 
 import { connect } from 'react-redux'
 
-import { addMove, jumpTo, previousMove, restartGame } from './actions'
+import {
+	addMove,
+	jumpTo,
+	previousMove,
+	nextMove,
+	restartGame
+} from './actions'
 
 
 function calculateWinner(board) {
@@ -59,13 +65,15 @@ const gameDispatchToProps = dispatch => {
 		addMove: (index, player) => dispatch(addMove(index, player)),
 		jumpTo: (index) => dispatch(jumpTo(index)),
 		restartGame: () => dispatch(restartGame()),
-		previousMove: () => dispatch(previousMove())
+		previousMove: () => dispatch(previousMove()),
+		nextMove: () => dispatch(nextMove())
 	}
 }
 
-const LeftControlPanel = ({previousMove, restartGame}) => (
+const LeftControlPanel = ({previousMove, nextMove, restartGame}) => (
 	<div class="tile is-vertical is-child">
-		<div className="button" onClick={previousMove}>Back One</div>
+		<div className="button" onClick={previousMove}>Previous</div>
+		<div className="button" onClick={nextMove}>Next</div>
 		<div className="button" onClick={restartGame}>Restart game</div>
 	</div>
 )
@@ -106,12 +114,6 @@ class Game extends React.Component {
 		return (
 			<div className="tile is-ancestor">
 				<div className="tile is-parent">
-					<div className="tile is-parent is-2">
-						<LeftControlPanel
-							previousMove={this.props.previousMove}
-							restartGame={this.props.restartGame}
-						/>
-					</div>
 					<div className="tile is-4 is-parent is-vertical">
 						<div className="tile title">{status}</div>
 						<div className="tile game-board">
@@ -120,9 +122,13 @@ class Game extends React.Component {
 								onClick={(i) => this.handleClick(i)}
 							/>
 						</div>
-					</div>
-					<div className="tile is-parent is-2">
-						<ol>{moves}</ol>
+						<div className="tile is-parent is-2">
+							<LeftControlPanel
+								previousMove={this.props.previousMove}
+								nextMove={this.props.nextMove}
+								restartGame={this.props.restartGame}
+							/>
+						</div>
 					</div>
 				</div>
 			</div>

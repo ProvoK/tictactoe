@@ -4,6 +4,7 @@ import {
 	ADD_MOVE,
 	JUMP_TO,
 	PREVIOUS_MOVE,
+	NEXT_MOVE,
 	RESTART_GAME
 } from './actions'
 
@@ -30,7 +31,7 @@ const addMove = (state, {sign, index}) => {
 
 const isValidIndex = R.curry((index, list) => R.and(
   R.gte(index, 0),
-  R.lt(index, R.length(list))
+  R.lte(index, R.length(list))
 ))
 
 const applyMove = (board, move) => R.update(move.index, move.sign, board)
@@ -56,6 +57,15 @@ const previousMove = (state, action) => {
 	return jumpTo(state, {index: state.moveIndex - 1})
 }
 
+const nextMove = (state, action) => {
+	return jumpTo(
+		state,
+		{
+			index: state.moveIndex + 1
+		}
+	)
+}
+
 const restartGame = (state, action) => {
 	return R.clone(initialState)
 }
@@ -68,6 +78,8 @@ const rootReducer = (state = initialState, action) => {
 			return jumpTo(state, action)
 		case PREVIOUS_MOVE:
 			return previousMove(state, action)
+		case NEXT_MOVE:
+			return nextMove(state, action)
 		case RESTART_GAME:
 			return restartGame(state, action)
 		default:
