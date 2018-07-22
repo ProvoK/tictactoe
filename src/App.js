@@ -48,8 +48,8 @@ const Board = ({onClick, board}) => (
 
 const gameStateToProps = state => {
 	return {
-		history: state.history,
-		board: state.history[state.index],
+		history: state.moves,
+		board: state.board,
 		player: state.nextPlayer
 	}
 }
@@ -86,7 +86,7 @@ class Game extends React.Component {
 	render() {
 		const winner = calculateWinner(this.props.board)
 
-		const moves = R.init(this.props.history).map((_, index) => {
+		const moves = R.clone(this.props.history).map((_, index) => {
 			const desc = index ? `Go to move # ${index}` : 'Go to start'
 			return (
 				<button

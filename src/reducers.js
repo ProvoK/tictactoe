@@ -8,24 +8,20 @@ import {
 } from './actions'
 
 const initialState = {
-	index: 0,
-	history: [Array(9).fill(null)],
-	nextPlayer: 'X'
+	nextPlayer: 'X',
+	board: Array(9).fill(null),
+	moves: [],
+	moveIndex: 0
 }
 
-const duplicateLast = (l) => R.append(R.last(l), l)
-const updateLastAt = R.curry((item, index, l) => (
-  R.update(l.length - 1, R.update(index, item, R.last(l)), l)
-))
-
-const addMove = (state, action) => {
+const addMove = (state, {sign, index}) => {
 	const transform = {
-		history: R.pipe(
-			R.take(state.index + 1),
-			duplicateLast,
-			updateLastAt(action.sign, action.index)
+		moves: R.pipe(
+			R.take(state.moveIndex),
+			R.append({sign, index})
 		),
-		index: R.add(1),
+		board: R.update(index, sign),
+		moveIndex: R.add(1),
 		nextPlayer: (x) => x === 'X' ? 'O' : 'X'
 	}
 	return R.evolve(transform, state)
@@ -37,19 +33,27 @@ const isValidIndex = R.curry((index, list) => R.and(
   R.lt(index, R.length(list))
 ))
 
+const applyMove = (board, move) => R.update(move.index, move.sign, board)
+
+const applyMoves = R.curry((board, moves) => R.reduce(applyMove, board, moves))
+
 const jumpTo = (state, {index}) => {
 	return R.ifElse(
-		R.pipe(R.prop('history'), isValidIndex(index)),
+		R.pipe(R.prop('moves'), isValidIndex(index)),
 		R.evolve({
-			index: () => index,
-			nextPlayer: () => index % 2 === 0 ? 'X' : 'O'
+			moveIndex: () => index,
+			nextPlayer: () => index % 2 === 0 ? 'X' : 'O',
+			board: () => applyMoves(
+				R.clone(initialState.board),
+				R.take(index, state.moves)
+			)
 		}),
 		R.identity
 	)(state)
 }
 
 const previousMove = (state, action) => {
-	return jumpTo(state, {index: state.index - 1})
+	return jumpTo(state, {index: state.moveIndex - 1})
 }
 
 const restartGame = (state, action) => {
