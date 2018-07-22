@@ -70,11 +70,26 @@ const gameDispatchToProps = dispatch => {
 	}
 }
 
+const IconButton = ({faIcon, label, onClick}) => (
+	<div className="button is-medium" onClick={onClick}>
+		<span className="icon">
+			<i className={`fa fa-${faIcon}`}></i>
+		</span>
+		<span> {label} </span>
+	</div>
+)
+
 const LeftControlPanel = ({previousMove, nextMove, restartGame}) => (
-	<div class="tile is-vertical is-child">
-		<div className="button" onClick={previousMove}>Previous</div>
-		<div className="button" onClick={nextMove}>Next</div>
-		<div className="button" onClick={restartGame}>Restart game</div>
+	<div className="tile is-vertical">
+		<IconButton
+			faIcon="backward" onClick={previousMove} label="Previous" key='previous'
+		/>
+		<IconButton
+			faIcon="forward" onClick={nextMove} label="Next" key='next'
+		/>
+		<IconButton
+			faIcon="power-off" onClick={restartGame} label="Restart" key='restart'
+		/>
 	</div>
 )
 
@@ -103,8 +118,8 @@ class Game extends React.Component {
 		}
 		return (
 			<div className="tile is-ancestor">
-				<div className="tile is-parent">
-					<div className="tile is-4 is-parent is-vertical">
+				<div className="tile">
+					<div className="tile is-vertical">
 						<div className="tile title">{status}</div>
 						<div className="tile game-board">
 							<Board
@@ -112,7 +127,7 @@ class Game extends React.Component {
 								onClick={(i) => this.handleClick(i)}
 							/>
 						</div>
-						<div className="tile is-parent is-2">
+						<div className="tile is-2">
 							<LeftControlPanel
 								previousMove={this.props.previousMove}
 								nextMove={this.props.nextMove}
