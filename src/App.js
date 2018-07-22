@@ -94,20 +94,10 @@ class Game extends React.Component {
 	render() {
 		const winner = calculateWinner(this.props.board)
 
-		const moves = R.clone(this.props.history).map((_, index) => {
-			const desc = index ? `Go to move # ${index}` : 'Go to start'
-			return (
-				<button
-					key={index}
-					className="button"
-					onClick={() => this.jumpTo(index)}
-				>{desc}</button>
-			)
-		})
-
 		let status
 		if (winner) {
-			status = `${this.props.player} wins!!!!`
+			const winningPlayer = this.props.player === 'O' ? 'X' : 'O'
+			status = `${winningPlayer} wins!!!!`
 		} else {
 			status = `${this.props.player} turn`
 		}
