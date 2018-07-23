@@ -2,7 +2,7 @@
   "name": "tictactoe",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://provok.github.com/tictactoe",
+  "homepage": "https://provok.github.io/tictactoe",
   "dependencies": {
     "bulma": "^0.7.1",
     "ramda": "^0.25.0",
